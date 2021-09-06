@@ -35,7 +35,7 @@ fn rocksdb_include_dir() -> String {
 
 fn bindgen_rocksdb() {
     let bindings = bindgen::Builder::default()
-        .header(rocksdb_include_dir() + "/rocksdb/c.h")
+        .header("/usr/local/musl/x86_64-unknown-linux-musl/include/rocksdb/c.h")
         .derive_debug(false)
         .blocklist_type("max_align_t") // https://github.com/rust-lang-nursery/rust-bindgen/issues/550
         .ctypes_prefix("libc")
@@ -53,6 +53,7 @@ fn build_rocksdb() {
     let target = env::var("TARGET").unwrap();
 
     let mut config = cc::Build::new();
+    config.include("/usr/local/musl/x86_64-unknown-linux-musl/include");
     config.include("rocksdb/include/");
     config.include("rocksdb/");
     config.include("rocksdb/third-party/gtest-1.8.1/fused-src/");
@@ -189,7 +190,7 @@ fn build_rocksdb() {
     config.define("ROCKSDB_SUPPORT_THREAD_LOCAL", None);
 
     if cfg!(feature = "jemalloc") {
-        config.define("WITH_JEMALLOC", "ON");
+        //config.define("WITH_JEMALLOC", "ON");
     }
 
     if target.contains("msvc") {
